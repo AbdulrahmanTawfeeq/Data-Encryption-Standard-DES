@@ -13,7 +13,7 @@ class PlainText {
   }
 
   void __setBlocks(String bin_str) {
-    this.__num_of_blocks = (bin_str.length / block_size).round();
+    this.__num_of_blocks = (bin_str.length / block_size).ceil();
     bin_str = bin_str.padRight(__num_of_blocks * block_size, '0');
     this.__blocks = Utilities.bin2Lists(bin_str, block_size)
         .map((list) => list.join())

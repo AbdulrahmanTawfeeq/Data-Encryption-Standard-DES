@@ -1,8 +1,9 @@
 import 'DES.dart';
-import 'Keys.dart';
-import 'PlainText.dart';
 
 void main(List<String> args) {
   DES des = new DES();
-  des.encrypt("Hello!!!", "AABB09182736CCDD");
+  List<String> encyptedBlocks = des.encrypt("Hello World", "AABB09182736CCDD");
+  print(encyptedBlocks);
+
+  // d1a87d37f5b6bfe1	51fcc0ce15d3de21
 }

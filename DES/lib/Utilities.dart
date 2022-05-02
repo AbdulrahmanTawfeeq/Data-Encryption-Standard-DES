@@ -24,8 +24,8 @@ class Utilities {
     int end = length;
     for (var i = 0; i < bin.length / length; i++) {
       list.add(bin.substring(start, end).split(""));
-      start = end;
-      end = end + length;
+      start += length;
+      end += length; 
     }
     return list;
   }
