@@ -7,7 +7,7 @@ class DES {
   final List<int> __EXP = [ 32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9, 8, 9, 10, 11, 12, 13, 12, 13, 14, 15, 16, 17, 16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24, 25, 24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1];
   final List<int> __SHR = [ 16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25];
   final List<int> __FP = [40,	8,	48,	16,	56,	24,	64,	32, 39,	7,	47,	15,	55,	23,	63,	31, 38,	6,	46,	14,	54,	22,	62,	30, 37,	5,	45,	13,	53,	21,	61,	29, 36,	4,	44,	12,	52,	20,	60,	28, 35,	3,	43,	11,	51,	19,	59,	27, 34,	2,	42,	10,	50,	18,	58,	26, 33,	1,	41,	9,	49,	17,	57,	25];
-  List<String> __encrypted = [];
+  List<String> __encHexBlocks = [];
   final List<List<List<int>>> S_BOXS = [
     [
       [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
@@ -69,11 +69,11 @@ class DES {
     keys = new Keys(key);
     for (String block_64 in plainText.getBlocks()) {
       String bin_64 = Utilities.permute(block_64, __IP); // initial permutation
-      List L_R = Utilities.bin2Lists(bin_64, (bin_64.length / 2).round());
+      List L_R = Utilities.str2Lists(bin_64, (bin_64.length / 2).round());
       List<String> R16_L16= __round(L_R[0], L_R[1], 0);
-      __encrypted.add(Utilities.bin2hex(Utilities.permute(R16_L16.join(""), __FP), 16));
+      __encHexBlocks.add(Utilities.bin2hex(Utilities.permute(R16_L16.join(""), __FP), 16));
     }
-    return getEncrypted();
+    return getEncHexBlocks();
   }
 
   List<String> __round(List<String> L, List<String> R, int round){
@@ -90,7 +90,7 @@ class DES {
     String xor_48 = Utilities.xor(R_48, key_48).join();
     String shrinked_32 = "";
     int index = 0;
-    for (List _6bits in Utilities.bin2Lists(xor_48, 6)) {
+    for (List _6bits in Utilities.str2Lists(xor_48, 6)) {
       int row = int.parse(_6bits.removeAt(0) + _6bits.removeLast(), radix: 2);
       int col = int.parse(_6bits.join(), radix: 2);
       shrinked_32 += S_BOXS[index][row][col].toRadixString(2).padLeft(4, '0');
@@ -99,7 +99,12 @@ class DES {
     return Utilities.permute(shrinked_32, __SHR);
   }
 
-  List<String> getEncrypted() {
-    return __encrypted;
+  List<String> getEncHexBlocks() {
+    return __encHexBlocks;
+  }
+
+  String getEncryptedText() {
+    String encryptedText = "";
+    return Utilities.str2Lists(getEncHexBlocks().join(), 2).map((list) => Utilities.hex2text(list.join())).join();
   }
 }

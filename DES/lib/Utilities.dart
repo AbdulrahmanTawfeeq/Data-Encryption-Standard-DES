@@ -18,14 +18,22 @@ class Utilities {
         .padLeft(padLeft, '0');
   }
 
-  static List<List<String>> bin2Lists(String bin, int length) {
+  static int hex2ascii(String hex) {
+    return int.parse(hex, radix: 16);
+  }
+
+  static String hex2text(String hex) {
+    return String.fromCharCode(hex2ascii(hex));
+  }
+
+  static List<List<String>> str2Lists(String bin, int length) {
     List<List<String>> list = [];
     int start = 0;
     int end = length;
     for (var i = 0; i < bin.length / length; i++) {
       list.add(bin.substring(start, end).split(""));
       start += length;
-      end += length; 
+      end += length;
     }
     return list;
   }

@@ -10,7 +10,7 @@ class Keys {
     String bin_64 = Utilities.hex2bin(hex_16, 64);
     String bin_56 = Utilities.permute(bin_64, __PC1);
 
-    List L_R = Utilities.bin2Lists(bin_56, (bin_56.length/2).round());
+    List L_R = Utilities.str2Lists(bin_56, (bin_56.length/2).round());
 
     __generator(L_R[0], L_R[1], 0);
   }
