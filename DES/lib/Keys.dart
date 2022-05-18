@@ -35,7 +35,11 @@ class Keys {
   }
 
   List getKeys(){
-    return __keys;
+    return this.__keys;
+  }
+
+  void setKeys(List<String> keys){
+    this.__keys = keys;
   }
 
   @override

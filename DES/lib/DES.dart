@@ -8,6 +8,7 @@ class DES {
   final List<int> __SHR = [ 16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25];
   final List<int> __FP = [40,	8,	48,	16,	56,	24,	64,	32, 39,	7,	47,	15,	55,	23,	63,	31, 38,	6,	46,	14,	54,	22,	62,	30, 37,	5,	45,	13,	53,	21,	61,	29, 36,	4,	44,	12,	52,	20,	60,	28, 35,	3,	43,	11,	51,	19,	59,	27, 34,	2,	42,	10,	50,	18,	58,	26, 33,	1,	41,	9,	49,	17,	57,	25];
   List<String> __encHexBlocks = [];
+  List<String> __decHexBlocks = [];
   final List<List<List<int>>> S_BOXS = [
     [
       [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
@@ -61,19 +62,33 @@ class DES {
 
   late PlainText plainText;
   late Keys keys;
+  static final String ENCRYPT = "ENCRYPT";
+  static final String DECRYPT = "DECRYPT";
 
   DES() {}
 
-  List<String> encrypt(String text, String key) {
+  List<String>? process(String text, String key, String type) {
     plainText = new PlainText(text);
     keys = new Keys(key);
+    if (type == DES.ENCRYPT) {
+      __encHexBlocks = [];
+    }else if (type == DES.DECRYPT) {
+      __decHexBlocks = [];
+      keys.setKeys(keys.getKeys().reversed.toList().cast<String>());
+    }
     for (String block_64 in plainText.getBlocks()) {
       String bin_64 = Utilities.permute(block_64, __IP); // initial permutation
       List L_R = Utilities.str2Lists(bin_64, (bin_64.length / 2).round());
-      List<String> R16_L16= __round(L_R[0], L_R[1], 0);
-      __encHexBlocks.add(Utilities.bin2hex(Utilities.permute(R16_L16.join(""), __FP), 16));
+      List<String> R16_L16 = __round(L_R[0], L_R[1], 0);
+      bin_64 = Utilities.permute(R16_L16.join(""), __FP); // final permutation
+      
+      if (type == DES.ENCRYPT) {
+        __encHexBlocks.add(Utilities.bin2hex(bin_64, 16));
+      }else if (type == DES.DECRYPT) {
+        __decHexBlocks.add(Utilities.bin2hex(bin_64, 16));
+      }
     }
-    return getEncHexBlocks();
+    return type == DES.ENCRYPT ? getEncHexBlocks() : type == DES.DECRYPT ? getDecHexBlocks(): null;
   }
 
   List<String> __round(List<String> L, List<String> R, int round){
@@ -104,7 +119,14 @@ class DES {
   }
 
   String getEncryptedText() {
-    String encryptedText = "";
     return Utilities.str2Lists(getEncHexBlocks().join(), 2).map((list) => Utilities.hex2text(list.join())).join();
+  }
+
+  List<String> getDecHexBlocks() {
+    return __decHexBlocks;
+  }
+
+  String getDecryptedText() {
+    return Utilities.str2Lists(getDecHexBlocks().join(), 2).map((list) => Utilities.hex2text(list.join())).join();
   }
 }
